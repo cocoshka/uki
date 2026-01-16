@@ -1,6 +1,5 @@
 use cfg_if::cfg_if;
 use clap::Parser;
-use daemonize::Daemonize;
 
 cfg_if! {
     if #[cfg(all(feature = "alloc-jem", not(target_env = "msvc")))] {
@@ -30,15 +29,6 @@ fn main() {
         tracing_subscriber::fmt()
             .with_max_level(cli.log_level)
             .init();
-    }
-
-    if cli.daemonize {
-        let daemonize = Daemonize::new().working_directory("/tmp");
-
-        match daemonize.start() {
-            Ok(_) => {}
-            Err(e) => panic!("daemonize failed: {e}"),
-        }
     }
 
     tokio::runtime::Builder::new_multi_thread()
